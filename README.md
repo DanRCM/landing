@@ -34,5 +34,3 @@ La landing busca comunicar la identidad y estilo de una plataforma tecnológica 
 | **Vercel** | Hosting y despliegue |
 
 ---
- ├── tailwind.config.js
- └── README.md
