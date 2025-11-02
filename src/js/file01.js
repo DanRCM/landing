@@ -1,27 +1,25 @@
 "use strict";
 
-// js/file01.js
-
-// 1️⃣ Importar la función fetchProducts desde functions.js
 import { fetchProducts } from './functions.js';
 
-// 2️⃣ Crear la función flecha renderProducts
+/**
+ * Renderiza los productos en el contenedor HTML
+ * @function
+ * @async
+ * @returns {Promise<void>}
+ * @description Obtiene productos de una API y los renderiza en el DOM, mostrando solo los primeros 6 productos.
+ * Cada producto se muestra en una tarjeta con imagen, título, precio y enlace a Amazon.
+ */
 const renderProducts = () => {
-  // 3️⃣ Llamar a fetchProducts con la URL indicada
   fetchProducts('https://data-dawm.github.io/datum/reseller/products.json')
     .then(result => {
-      // 4️⃣ Verificar si result.success es true o false
       if (result.success) {
-        // 5️⃣ Obtener referencia al contenedor y limpiar contenido previo
         const container = document.getElementById('products-container');
         container.innerHTML = '';
 
-        // 6️⃣ Obtener productos y limitar a los primeros 6
         let products = result.body.slice(0, 6);
 
-        // 7️⃣ Recorrer los productos
         products.forEach(product => {
-          // 8️⃣ Crear plantilla HTML con template literal
           let productHTML = `
           <div class="space-y-4 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow">
               <img
@@ -42,7 +40,6 @@ const renderProducts = () => {
               </div>
           </div>`;
 
-          // 9️⃣ Reemplazar los marcadores con los valores del producto
           productHTML = productHTML.replaceAll('[PRODUCT.IMGURL]', product.imgUrl);
           productHTML = productHTML.replaceAll(
             '[PRODUCT.TITLE]',
@@ -52,11 +49,9 @@ const renderProducts = () => {
           productHTML = productHTML.replaceAll('[PRODUCT.PRODUCTURL]', product.productURL);
           productHTML = productHTML.replaceAll('[PRODUCT.CATEGORY_ID]', product.category_id);
 
-          // 🔟 Concatenar el producto al contenedor
           container.innerHTML += productHTML;
         });
       } else {
-        // ⚠️ En caso de error, mostrar alerta
         alert('Error: ' + (result.message || 'No se pudo obtener los productos.'));
       }
     })
@@ -66,13 +61,44 @@ const renderProducts = () => {
     });
 };
 
-// 1️⃣1️⃣ Llamar a la función renderProducts en una función de autoejecución
+/**
+ * Muestra el toast interactivo en la interfaz
+ * @function
+ * @description Agrega la clase CSS necesaria para mostrar el elemento toast.
+ * Busca el elemento con ID "toast-interactive" y le añade la clase "md:block".
+ */
+const showToast = () => {
+  const toast = document.getElementById("toast-interactive");
+  if (toast) {
+    toast.classList.add("md:block");
+  }
+};
+
+/**
+ * Configura el evento click para el video demo
+ * @function
+ * @description Agrega un event listener al elemento con ID "demo" para abrir
+ * un enlace de YouTube en una nueva pestaña cuando se hace click.
+ */
+const showVideo = () => {
+  const demo = document.getElementById("demo");
+  if (demo) {
+    demo.addEventListener("click", () => {
+      window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+    });
+  }
+};
+
+/**
+ * Función de inicialización inmediatamente invocada (IIFE)
+ * @function
+ * @description Función auto-ejecutable que inicializa la aplicación:
+ * - Renderiza los productos
+ * - Muestra el toast
+ * - Configura el evento del video demo
+ */
 (() => {
   renderProducts();
-})();
-
-
-(() => {
-    alert("¡Bienvenido a la página!");
-    console.log("Mensaje de bienvenida mostrado.");
+  showToast();
+  showVideo();
 })();
