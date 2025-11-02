@@ -1,6 +1,44 @@
 "use strict";
 
-import { fetchProducts } from './functions.js';
+import { fetchProducts, fetchCategories } from './functions.js';
+
+/**
+ * Renderiza las categorías en el elemento select correspondiente
+ * @function
+ * @async
+ * @returns {Promise<void>}
+ * @description Obtiene categorías de una API XML y las renderiza en un elemento select
+ */
+const renderCategories = async () => {
+  try {
+    const result = await fetchCategories('https://data-dawm.github.io/datum/reseller/categories.xml');
+    
+    if (result.success) {
+      const container = document.getElementById('categories');
+      container.innerHTML = `<option selected disabled>Seleccione una categoría</option>`;
+      
+      const categoriesXML = result.body;
+      const categories = categoriesXML.getElementsByTagName('category');
+      
+      for (let category of categories) {
+        let categoryHTML = `<option value="[ID]">[NAME]</option>`;
+        
+        const id = category.getElementsByTagName('id')[0].textContent;
+        const name = category.getElementsByTagName('name')[0].textContent;
+        
+        categoryHTML = categoryHTML.replaceAll('[ID]', id);
+        categoryHTML = categoryHTML.replaceAll('[NAME]', name);
+        
+        container.innerHTML += categoryHTML;
+      }
+    } else {
+      alert('Error: ' + (result.message || 'No se pudo obtener las categorías.'));
+    }
+  } catch (error) {
+    console.error('Error en renderCategories:', error);
+    alert('Ocurrió un error al obtener las categorías.');
+  }
+};
 
 /**
  * Renderiza los productos en el contenedor HTML
@@ -93,11 +131,13 @@ const showVideo = () => {
  * Función de inicialización inmediatamente invocada (IIFE)
  * @function
  * @description Función auto-ejecutable que inicializa la aplicación:
+ * - Renderiza las categorías
  * - Renderiza los productos
  * - Muestra el toast
  * - Configura el evento del video demo
  */
 (() => {
+  renderCategories();
   renderProducts();
   showToast();
   showVideo();
