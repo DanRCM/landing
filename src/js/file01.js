@@ -1,13 +1,171 @@
 "use strict";
 
 import { fetchProducts, fetchCategories } from './functions.js';
+import { saveVote, getVotes } from './firebase.js';
+
+/**
+ * Habilita el formulario de votación
+ * @function
+ * @description Configura el event listener para el formulario de votación
+ */
+const enableForm = () => {
+  const form = document.getElementById('form_voting');
+  
+  if (form) {
+    form.addEventListener('submit', async (event) => {
+      // Prevenir el comportamiento por defecto del formulario
+      event.preventDefault();
+      
+      // Obtener el valor del select
+      const selectProduct = document.getElementById('select_product');
+      const productID = selectProduct.value;
+      
+      // Validar que se haya seleccionado un producto
+      if (!productID) {
+        alert('Por favor, selecciona un producto para votar.');
+        return;
+      }
+      
+      try {
+        // Llamar a la función saveVote con el productID
+        const result = await saveVote(productID);
+        
+        // Mostrar mensaje de alerta con el resultado
+        if (result.success) {
+          alert('✅ ' + result.message);
+          // Opcional: resetear el formulario
+          form.reset();
+          // Actualizar la tabla de votos
+          await displayVotes();
+        } else {
+          alert('❌ ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error en el formulario:', error);
+        alert('❌ Ocurrió un error inesperado al guardar el voto.');
+      }
+    });
+  }
+};
+
+/**
+ * Muestra los votos en una tabla HTML
+ * @function
+ * @async
+ * @description Obtiene los votos de Firebase y los muestra en una tabla
+ */
+const displayVotes = async () => {
+  try {
+    const result = await getVotes();
+    const container = document.getElementById('results');
+    
+    if (!result.success) {
+      container.innerHTML = `<p class="text-red-500">Error: ${result.message}</p>`;
+      return;
+    }
+    
+    const votes = result.data;
+    
+    // Si no hay votos
+    if (Object.keys(votes).length === 0) {
+      container.innerHTML = `
+        <div class="text-center p-4 bg-gray-100 rounded-lg">
+          <p class="text-gray-600">No hay votos registrados todavía.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    // Calcular total de votos por producto
+    const voteCounts = {};
+    Object.values(votes).forEach(vote => {
+      if (!voteCounts[vote.productID]) {
+        voteCounts[vote.productID] = 0;
+      }
+      voteCounts[vote.productID]++;
+    });
+    
+    // Crear tabla HTML
+    let tableHTML = `
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
+          <thead class="bg-gray-200 dark:bg-gray-700">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Producto
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Total de Votos
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Porcentaje
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+    `;
+    
+    const totalVotes = Object.values(voteCounts).reduce((sum, count) => sum + count, 0);
+    
+    // Ordenar productos por cantidad de votos (descendente)
+    const sortedProducts = Object.entries(voteCounts)
+      .sort(([,a], [,b]) => b - a);
+    
+    sortedProducts.forEach(([productID, count]) => {
+      const percentage = totalVotes > 0 ? ((count / totalVotes) * 100).toFixed(1) : 0;
+      
+      tableHTML += `
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+            ${productID}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+            ${count}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+            ${percentage}%
+          </td>
+        </tr>
+      `;
+    });
+    
+    tableHTML += `
+          </tbody>
+          <tfoot class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
+                TOTAL
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
+                ${totalVotes}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
+                100%
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    `;
+    
+    container.innerHTML = tableHTML;
+    
+  } catch (error) {
+    console.error('Error mostrando votos:', error);
+    const container = document.getElementById('results');
+    container.innerHTML = `
+      <div class="text-red-500 p-4 bg-red-50 rounded-lg">
+        Error al cargar los votos: ${error.message}
+      </div>
+    `;
+  }
+};
 
 /**
  * Renderiza las categorías en el elemento select correspondiente
  * @function
  * @async
  * @returns {Promise<void>}
- * @description Obtiene categorías de una API XML y las renderiza en un elemento select
  */
 const renderCategories = async () => {
   try {
@@ -45,8 +203,6 @@ const renderCategories = async () => {
  * @function
  * @async
  * @returns {Promise<void>}
- * @description Obtiene productos de una API y los renderiza en el DOM, mostrando solo los primeros 6 productos.
- * Cada producto se muestra en una tarjeta con imagen, título, precio y enlace a Amazon.
  */
 const renderProducts = () => {
   fetchProducts('https://data-dawm.github.io/datum/reseller/products.json')
@@ -102,8 +258,6 @@ const renderProducts = () => {
 /**
  * Muestra el toast interactivo en la interfaz
  * @function
- * @description Agrega la clase CSS necesaria para mostrar el elemento toast.
- * Busca el elemento con ID "toast-interactive" y le añade la clase "md:block".
  */
 const showToast = () => {
   const toast = document.getElementById("toast-interactive");
@@ -115,8 +269,6 @@ const showToast = () => {
 /**
  * Configura el evento click para el video demo
  * @function
- * @description Agrega un event listener al elemento con ID "demo" para abrir
- * un enlace de YouTube en una nueva pestaña cuando se hace click.
  */
 const showVideo = () => {
   const demo = document.getElementById("demo");
@@ -130,15 +282,13 @@ const showVideo = () => {
 /**
  * Función de inicialización inmediatamente invocada (IIFE)
  * @function
- * @description Función auto-ejecutable que inicializa la aplicación:
- * - Renderiza las categorías
- * - Renderiza los productos
- * - Muestra el toast
- * - Configura el evento del video demo
+ * @description Función auto-ejecutable que inicializa la aplicación
  */
 (() => {
   renderCategories();
   renderProducts();
   showToast();
   showVideo();
+  enableForm();
+  displayVotes();
 })();
