@@ -1,3 +1,38 @@
-# FashionShop: Tu Estilo al Alcance de un Click
+# 🎮 Landing Page - Tech Gaming
 
-- El objetivo de esta landing page es crear una página de ventas simple y atractiva para una tienda online de ropa. El enfoque será ofrecer una experiencia de compra directa y sin distracciones, destacando productos de moda para diferentes públicos. A través de una interfaz sencilla y moderna, los usuarios podrán navegar por diferentes categorías de ropa, ver las ofertas destacadas, y realizar una compra de forma rápida y eficiente.
+Landing page interactiva enfocada en el mundo **tecnológico y gamer**, desarrollada como práctica profesional para fortalecer habilidades en **HTML, CSS, JavaScript y TailwindCSS**. El sitio ofrece una experiencia visual moderna con componentes personalizados y efectos dinámicos.
+
+---
+
+## 🎯 Objetivo
+
+Crear una **landing page interactiva y atractiva**, utilizando **JavaScript** y una plantilla basada en **TailwindCSS**, adaptando estilos y componentes para transmitir la identidad visual de una marca o producto del mundo del gaming.
+
+---
+
+## 📝 Descripción del Proyecto
+
+Este proyecto permite aplicar conocimientos de:
+
+- 🌐 **HTML5** → estructura del sitio  
+- 🎨 **CSS3 & TailwindCSS** → diseño responsive y estilización moderna  
+- ⚙️ **JavaScript** → animaciones e interactividad  
+- 🧩 **Diseño Web** → principios visuales y experiencia de usuario
+
+La landing busca comunicar la identidad y estilo de una plataforma tecnológica enfocada en el gaming, con elementos vibrantes, tendencias visuales futuristas y navegación fluida tipo SPA.
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+
+| Tecnología | Uso |
+|----------|-----|
+| **HTML5** | Estructura del sitio |
+| **TailwindCSS** | Diseño moderno y responsive |
+| **CSS3** | Estilos personalizados |
+| **JavaScript** | Interactividad y funciones dinámicas |
+| **Vercel** | Hosting y despliegue |
+
+---
+ ├── tailwind.config.js
+ └── README.md
