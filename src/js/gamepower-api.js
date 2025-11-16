@@ -8,12 +8,15 @@ import {
 
 // Configuración de la API de GamerPower
 const GAMERPOWER_API = {
-  baseURL: 'https://www.gamerpower.com/api',
-  endpoints: {
-    giveaways: '/api/giveaways',
-    filtered: (platform, type) => 
-      `/api/giveaways?platform=${platform}&type=${type}`
-  }
+  // Usar URL directa en producción, proxy en desarrollo
+  giveaways: import.meta.env.PROD 
+    ? 'https://www.gamerpower.com/api/giveaways'
+    : '/api/giveaways',
+  
+  filtered: (platform, type) => 
+    import.meta.env.PROD
+      ? `https://www.gamerpower.com/api/giveaways?platform=${platform}&type=${type}`
+      : `/api/giveaways?platform=${platform}&type=${type}`
 };
 
 // Cache de giveaways para buscar por ID
@@ -25,7 +28,10 @@ let currentGiveaways = [];
  */
 export const fetchGiveaways = async () => {
   try {
-    const response = await fetch('/api/giveaways');
+    const url = GAMERPOWER_API.giveaways;
+    console.log('Haciendo fetch a:', url);
+    
+    const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
@@ -49,6 +55,25 @@ export const fetchGiveaways = async () => {
     };
   } catch (error) {
     console.error('Error fetching giveaways:', error);
+    
+    // En producción, intentar con CORS proxy como fallback
+    if (import.meta.env.PROD) {
+      console.log('Intentando con proxy CORS...');
+      try {
+        const corsProxyResponse = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://www.gamerpower.com/api/giveaways')}`);
+        if (corsProxyResponse.ok) {
+          const data = await corsProxyResponse.json();
+          currentGiveaways = data;
+          return {
+            success: true,
+            data: data
+          };
+        }
+      } catch (corsError) {
+        console.error('Error con proxy CORS:', corsError);
+      }
+    }
+    
     return {
       success: false,
       message: error.message,
@@ -56,7 +81,6 @@ export const fetchGiveaways = async () => {
     };
   }
 };
-
 /**
  * Encuentra un giveaway por ID en el cache
  * @param {number} giveawayId 
