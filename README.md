@@ -1,36 +1,59 @@
-# 🎮 Landing Page - Tech Gaming
+# GameDeals - Landing Page de Juegos Gratis y Ofertas
 
-Landing page interactiva enfocada en el mundo **tecnológico y gamer**, desarrollada como práctica profesional para fortalecer habilidades en **HTML, CSS, JavaScript y TailwindCSS**. El sitio ofrece una experiencia visual moderna con componentes personalizados y efectos dinámicos.
+## Descripción del Proyecto
 
----
+GameDeals es una landing page moderna y responsive que utiliza la API de GamerPower para mostrar giveaways activos de juegos y contenido gratuito. Los usuarios pueden explorar ofertas, filtrar por plataforma y tipo, guardar sus giveaways favoritos y suscribirse para recibir notificaciones de nuevas ofertas.
 
-## 🎯 Objetivo
+## Objetivo
 
-Crear una **landing page interactiva y atractiva**, utilizando **JavaScript** y una plantilla basada en **TailwindCSS**, adaptando estilos y componentes para transmitir la identidad visual de una marca o producto del mundo del gaming.
+El objetivo de este proyecto es proporcionar una interfaz atractiva y fácil de usar para descubrir juegos gratuitos y ofertas en diversas plataformas. Además, permite a los usuarios guardar sus giveaways de interés y suscribirse para no perderse ninguna oferta.
 
----
+## Características
 
-## 📝 Descripción del Proyecto
+- **Explorar Giveaways**: Muestra una lista de giveaways activos con detalles como título, valor, descripción, fecha de finalización y más.
+- **Filtros**: Permite filtrar giveaways por plataforma (PC, Steam, Epic Games, etc.) y tipo (Juego, DLC, Early Access, etc.).
+- **Guardar Giveaways**: Los usuarios pueden guardar giveaways en su lista personalizada, almacenada en Firebase para persistencia.
+- **Suscripciones**: Formulario de suscripción para recibir alertas de nuevas ofertas, guardando los datos en Firebase.
+- **Diseño Responsive**: Optimizado para dispositivos móviles y desktop.
+- **Tema Oscuro**: Diseño con paleta de colores oscura, típica de gaming.
 
-Este proyecto permite aplicar conocimientos de:
+## Tecnologías Utilizadas
 
-- 🌐 **HTML5** → estructura del sitio  
-- 🎨 **CSS3 & TailwindCSS** → diseño responsive y estilización moderna  
-- ⚙️ **JavaScript** → animaciones e interactividad  
-- 🧩 **Diseño Web** → principios visuales y experiencia de usuario
+- **Frontend**:
+  - HTML5
+  - CSS3 (Tailwind CSS)
+  - JavaScript (ES6+)
+- **Backend y Base de Datos**:
+  - Firebase Realtime Database
+- **Herramientas de Desarrollo**:
+  - Vite (entorno de desarrollo y build)
+  - Flowbite (componentes de UI para Tailwind CSS)
+- **APIs**:
+  - GamerPower API (https://www.gamerpower.com/api)
 
-La landing busca comunicar la identidad y estilo de una plataforma tecnológica enfocada en el gaming, con elementos vibrantes, tendencias visuales futuristas y navegación fluida tipo SPA.
+## Estructura del Proyecto
+src/
+├── index.html # Página principal
+├── js/
+│ ├── main.js # Lógica principal de la aplicación
+│ ├── gamepower-api.js # Funciones para interactuar con la API de GamerPower
+│ └── firebase.js # Configuración y funciones de Firebase
+├── .env # Variables de entorno
+└── vite.config.js # Configuración de Vite (proxy para CORS)
 
----
 
-## 🛠️ Tecnologías Utilizadas
+## Configuración del Proyecto
 
-| Tecnología | Uso |
-|----------|-----|
-| **HTML5** | Estructura del sitio |
-| **TailwindCSS** | Diseño moderno y responsive |
-| **CSS3** | Estilos personalizados |
-| **JavaScript** | Interactividad y funciones dinámicas |
-| **Vercel** | Hosting y despliegue |
+### Prerrequisitos
 
----
+- Node.js (versión 14 o superior)
+- npm o yarn
+- Cuenta en Firebase para usar Realtime Database
+
+### Pasos para Configuración
+
+1. **Clonar el repositorio** (o descargar los archivos)
+
+2. **Instalar dependencias**:
+   ```bash
+   npm install
