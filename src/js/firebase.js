@@ -1,6 +1,6 @@
 "use strict";
 
-// Importar funciones de Firebase desde el CDN
+// Importar funciones de Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { 
   getDatabase, 
@@ -8,12 +8,11 @@ import {
   set, 
   push, 
   get, 
-  child,
-  update,
+  onValue,
   remove
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// Configuración de Firebase desde variables de entorno de Vite
+// Configuración de Firebase desde variables de entorno
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -24,95 +23,131 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Inicializar la aplicación Firebase
+// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
-
-// Obtener referencia a la base de datos en tiempo real
 const database = getDatabase(app);
 
 /**
- * Guarda un voto para un producto en la base de datos
- * @param {string} productID - ID del producto que se está votando
- * @returns {Promise<{success: boolean, message: string}>} - Resultado de la operación
+ * Guarda un giveaway completo en Firebase
+ * @param {Object} giveawayData - Datos completos del giveaway
+ * @returns {Promise<{success: boolean, message: string, savedId: string}>}
  */
-const saveVote = (productID) => {
-  // Obtener referencia a la colección 'votes'
-  const votesRef = ref(database, 'votes');
-  
-  // Crear una nueva referencia para un usuario con ID único
-  const newVoteRef = push(votesRef);
-  
-  // Crear objeto con los datos del voto
-  const voteData = {
-    productID: productID,
-    timestamp: new Date().toISOString(),
-    date: new Date().toLocaleDateString('es-ES'),
-    time: new Date().toLocaleTimeString('es-ES')
-  };
-  
-  // Guardar los datos en la base de datos y manejar la promesa
-  return set(newVoteRef, voteData)
-    .then(() => {
-      return {
-        success: true,
-        message: 'Voto guardado exitosamente',
-        voteId: newVoteRef.key
-      };
-    })
-    .catch((error) => {
-      console.error('Error guardando voto:', error);
-      return {
-        success: false,
-        message: `Error al guardar el voto: ${error.message}`
-      };
-    });
-};
-
-/**
- * Obtiene todos los votos de la base de datos
- * @returns {Promise<{success: boolean, data: Object|string}>} - Resultado con los datos o mensaje de error
- */
-const getVotes = async () => {
+export const saveGiveawayToFirebase = async (giveawayData) => {
   try {
-    // Obtener referencia a la colección 'votes'
-    const votesRef = ref(database, 'votes');
+    const savedGiveawaysRef = ref(database, 'savedGiveaways');
+    const newGiveawayRef = push(savedGiveawaysRef);
     
-    // Obtener los datos una sola vez
-    const snapshot = await get(votesRef);
+    const giveawayWithMetadata = {
+      ...giveawayData,
+      firebaseId: newGiveawayRef.key,
+      savedAt: new Date().toISOString(),
+      savedDate: new Date().toLocaleDateString('es-ES'),
+      savedTime: new Date().toLocaleTimeString('es-ES')
+    };
     
-    if (snapshot.exists()) {
-      // Si existen datos, retornarlos
-      return {
-        success: true,
-        data: snapshot.val()
-      };
-    } else {
-      // Si no hay datos
-      return {
-        success: true,
-        data: {},
-        message: 'No hay votos registrados'
-      };
-    }
+    await set(newGiveawayRef, giveawayWithMetadata);
+    
+    return {
+      success: true,
+      message: 'Giveaway guardado exitosamente en Firebase',
+      savedId: newGiveawayRef.key
+    };
   } catch (error) {
-    console.error('Error obteniendo votos:', error);
+    console.error('Error guardando en Firebase:', error);
     return {
       success: false,
-      message: `Error al obtener los votos: ${error.message}`
+      message: `Error al guardar: ${error.message}`
     };
   }
 };
 
-// Exportar las funciones y la base de datos para usar en otros archivos
-export { 
-  database, 
-  ref, 
-  set, 
-  push, 
-  get, 
-  child,
-  update,
-  remove,
-  saveVote,
-  getVotes
+/**
+ * Obtiene todos los giveaways guardados de Firebase
+ * @returns {Promise<{success: boolean, data: Array|string}>}
+ */
+export const getSavedGiveawaysFromFirebase = async () => {
+  try {
+    const savedGiveawaysRef = ref(database, 'savedGiveaways');
+    const snapshot = await get(savedGiveawaysRef);
+    
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      // Convertir objeto de Firebase en array
+      const giveawaysArray = Object.values(data).filter(item => item !== null);
+      return {
+        success: true,
+        data: giveawaysArray
+      };
+    } else {
+      return {
+        success: true,
+        data: [],
+        message: 'No hay giveaways guardados'
+      };
+    }
+  } catch (error) {
+    console.error('Error obteniendo giveaways de Firebase:', error);
+    return {
+      success: false,
+      message: `Error al obtener los giveaways: ${error.message}`,
+      data: []
+    };
+  }
 };
+
+/**
+ * Elimina un giveaway guardado de Firebase
+ * @param {string} firebaseId - ID de Firebase del giveaway
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export const removeSavedGiveaway = async (firebaseId) => {
+  try {
+    const giveawayRef = ref(database, `savedGiveaways/${firebaseId}`);
+    await remove(giveawayRef);
+    return {
+      success: true,
+      message: 'Giveaway eliminado correctamente'
+    };
+  } catch (error) {
+    console.error('Error eliminando giveaway:', error);
+    return {
+      success: false,
+      message: `Error al eliminar: ${error.message}`
+    };
+  }
+};
+
+/**
+ * Guarda una suscripción en Firebase
+ * @param {string} email 
+ * @param {string} platform 
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export const saveSubscriptionToFirebase = async (email, platform) => {
+  try {
+    const subscriptionsRef = ref(database, 'subscriptions');
+    const newSubscriptionRef = push(subscriptionsRef);
+    
+    const subscriptionData = {
+      email: email,
+      platform: platform,
+      subscribedAt: new Date().toISOString(),
+      subscribedDate: new Date().toLocaleDateString('es-ES')
+    };
+    
+    await set(newSubscriptionRef, subscriptionData);
+    
+    return {
+      success: true,
+      message: 'Suscripción guardada correctamente en Firebase'
+    };
+  } catch (error) {
+    console.error('Error guardando suscripción:', error);
+    return {
+      success: false,
+      message: `Error al guardar suscripción: ${error.message}`
+    };
+  }
+};
+
+export { database, ref, set, push, get, onValue, remove };
