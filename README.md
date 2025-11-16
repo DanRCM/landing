@@ -33,12 +33,22 @@ El objetivo de este proyecto es proporcionar una interfaz atractiva y fácil de 
 
 ## Estructura del Proyecto
 src/
+
 ├── index.html # Página principal
+
 ├── js/
-│ ├── main.js # Lógica principal de la aplicación
-│ ├── gamepower-api.js # Funciones para interactuar con la API de GamerPower
-│ └── firebase.js # Configuración y funciones de Firebase
+
+│ 
+      ├── main.js # Lógica principal de la aplicación
+
+│ 
+      ├── gamepower-api.js # Funciones para interactuar con la API de GamerPower
+
+│ 
+      └── firebase.js # Configuración y funciones de Firebase
+
 ├── .env # Variables de entorno
+
 └── vite.config.js # Configuración de Vite (proxy para CORS)
 
 
