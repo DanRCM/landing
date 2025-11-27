@@ -14,8 +14,48 @@
       background: linear-gradient(135deg, #1a1f2b 0%, #0d1117 100%);
     }
 
+    /* Estilos para las tarjetas de tamaño normal */
     .game-card {
       background: linear-gradient(145deg, #2d3748 0%, #4a5568 100%);
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+
+    .game-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      border-color: #10b981;
+    }
+
+    /* Tamaño consistente para las imágenes */
+    .game-image {
+      height: 180px;
+      object-fit: cover;
+    }
+
+    /* Limitar altura de descripción */
+    .description-clamp {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Estados de carga */
+    .loading-skeleton {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .5;
+      }
     }
   </style>
 </head>
@@ -96,23 +136,47 @@
 
         <!-- Filtros -->
         <div class="mb-8 flex flex-wrap gap-4 justify-center">
-          <select id="platform-filter" class="bg-gray-700 border border-gray-600 text-white rounded-lg p-2">
+          <select id="platform-filter" class="bg-gray-700 border border-gray-600 text-white rounded-lg p-2 text-sm">
             <option value="">Todas las Plataformas</option>
             <option value="PC">PC</option>
             <option value="Steam">Steam</option>
             <option value="Epic Games">Epic Games</option>
+            <option value="PlayStation">PlayStation</option>
+            <option value="Xbox">Xbox</option>
+            <option value="Nintendo">Nintendo</option>
           </select>
-          <select id="type-filter" class="bg-gray-700 border border-gray-600 text-white rounded-lg p-2">
+          <select id="type-filter" class="bg-gray-700 border border-gray-600 text-white rounded-lg p-2 text-sm">
             <option value="">Todos los Tipos</option>
             <option value="Game">Juego Completo</option>
             <option value="DLC">DLC</option>
             <option value="Early Access">Acceso Anticipado</option>
+            <option value="Beta">Beta</option>
+            <option value="Loot">Loot</option>
           </select>
         </div>
 
-        <!-- Contenedor de Giveaways -->
-        <div id="giveaways-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Contador de resultados -->
+        <div class="flex justify-between items-center mb-6">
+          <p id="results-counter" class="text-gray-300 text-sm">
+            <span id="visible-count">0</span> de <span id="total-count">0</span> juegos mostrados
+          </p>
+          <button id="toggle-view-btn" class="text-green-400 hover:text-green-300 text-sm font-medium hidden">
+            <span id="toggle-text">Ver más</span>
+            <span id="toggle-icon">↓</span>
+          </button>
+        </div>
+
+        <!-- Contenedor de Giveaways - Grid Normal -->
+        <div id="giveaways-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <!-- Los giveaways se cargan aquí dinámicamente -->
+        </div>
+
+        <!-- Botón de carga -->
+        <div id="load-more-container" class="text-center mt-8 hidden">
+          <button id="load-more-btn"
+            class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg transition font-medium">
+            Cargar más juegos
+          </button>
         </div>
       </div>
     </section>
