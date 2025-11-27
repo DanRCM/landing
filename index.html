@@ -13,6 +13,7 @@
     .gradient-bg {
       background: linear-gradient(135deg, #1a1f2b 0%, #0d1117 100%);
     }
+
     .game-card {
       background: linear-gradient(145deg, #2d3748 0%, #4a5568 100%);
     }
@@ -56,7 +57,11 @@
           <li>
             <a href="#my-giveaways"
               class="block py-2 px-3 text-gray-400 rounded hover:bg-gray-700 md:hover:bg-transparent md:border-0 md:hover:text-purple-400 md:p-0">Mis
-                Guardados</a>
+              Guardados</a>
+          </li>
+          <li>
+            <a href="#voting"
+              class="block py-2 px-3 text-gray-400 rounded hover:bg-gray-700 md:hover:bg-transparent md:border-0 md:hover:text-purple-400 md:p-0">Votaciones</a>
           </li>
         </ul>
       </div>
@@ -70,13 +75,15 @@
         Encuentra <span class="text-green-400">Juegos Gratis</span> y Descuentos
       </h1>
       <p class="mt-6 text-lg leading-relaxed text-gray-300 max-w-2xl mx-auto">
-        Usamos la API de GamerPower para traerte las mejores ofertas y giveaways activos. ¡No vuelvas a pagar de más por tus juegos!
+        Usamos la API de GamerPower para traerte las mejores ofertas y giveaways activos. ¡No vuelvas a pagar de más por
+        tus juegos!
       </p>
       <div class="mt-8 flex justify-center gap-4 flex-wrap">
         <button id="explore-btn" class="px-6 py-3 text-white bg-green-500 rounded-lg hover:bg-green-600 transition">
           Explorar Juegos
         </button>
-        <button id="learn-more" class="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 transition">
+        <button id="learn-more"
+          class="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 transition">
           Cómo Funciona
         </button>
       </div>
@@ -86,7 +93,7 @@
     <section id="giveaways" class="py-16 px-4">
       <div class="max-w-7xl mx-auto">
         <h2 class="text-3xl font-bold text-center mb-12 text-white">Giveaways Activos</h2>
-        
+
         <!-- Filtros -->
         <div class="mb-8 flex flex-wrap gap-4 justify-center">
           <select id="platform-filter" class="bg-gray-700 border border-gray-600 text-white rounded-lg p-2">
@@ -121,9 +128,10 @@
               class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent"
               placeholder="tucorreo@ejemplo.com">
           </div>
-          
+
           <div>
-            <label for="platform-preference" class="block text-sm font-medium text-gray-300 mb-2">Plataforma Preferida</label>
+            <label for="platform-preference" class="block text-sm font-medium text-gray-300 mb-2">Plataforma
+              Preferida</label>
             <select id="platform-preference" name="platform"
               class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-green-500 focus:border-transparent">
               <option value="all">Todas las Plataformas</option>
@@ -151,6 +159,74 @@
         <div id="saved-giveaways-container" class="space-y-4">
           <!-- Los giveaways guardados se muestran aquí -->
           <p class="text-gray-400 text-center">Usa el botón "Guardar" en cualquier giveaway para verlo aquí.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de Votaciones -->
+    <section id="voting" class="py-16 px-4 bg-gray-800">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold text-center mb-12 text-white">Vota por tu Juego Favorito</h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Formulario de Votación -->
+          <div class="bg-gray-900 p-8 rounded-xl shadow-2xl">
+            <h3 class="text-xl font-bold mb-6 text-green-400">Elige tu juego favorito</h3>
+
+            <!-- Filtros para encontrar juegos más rápido -->
+            <div class="mb-6 space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Filtrar por Plataforma</label>
+                <select id="voting-platform-filter"
+                  class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-green-500">
+                  <option value="">Todas las Plataformas</option>
+                  <option value="PC">PC</option>
+                  <option value="Steam">Steam</option>
+                  <option value="Epic Games">Epic Games</option>
+                  <option value="PlayStation">PlayStation</option>
+                  <option value="Xbox">Xbox</option>
+                  <option value="Nintendo">Nintendo</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Filtrar por Tipo</label>
+                <select id="voting-type-filter"
+                  class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-green-500">
+                  <option value="">Todos los Tipos</option>
+                  <option value="Game">Juego Completo</option>
+                  <option value="DLC">DLC</option>
+                  <option value="Early Access">Acceso Anticipado</option>
+                  <option value="Beta">Beta</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Select de Juegos -->
+            <form id="voting-form" class="space-y-6">
+              <div>
+                <label for="game-select" class="block text-sm font-medium text-gray-300 mb-2">Selecciona un
+                  Juego</label>
+                <select id="game-select" required
+                  class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-green-500">
+                  <option value="" disabled selected>Busca y selecciona tu juego favorito</option>
+                </select>
+              </div>
+
+              <button type="submit"
+                class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition duration-200 focus:ring-4 focus:ring-purple-300">
+                🎮 VOTAR
+              </button>
+            </form>
+          </div>
+
+          <!-- Resultados de Votación -->
+          <div class="bg-gray-900 p-8 rounded-xl shadow-2xl">
+            <h3 class="text-xl font-bold mb-6 text-green-400">Resultados de la Votación</h3>
+            <div id="voting-results" class="space-y-4">
+              <p class="text-gray-400 text-center py-8">Los votos aparecerán aquí...</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

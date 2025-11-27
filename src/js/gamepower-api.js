@@ -20,7 +20,7 @@ const GAMERPOWER_API = {
 };
 
 // Cache de giveaways para buscar por ID
-let currentGiveaways = [];
+export let currentGiveaways = [];
 
 /**
  * Obtiene los giveaways desde la API de GamerPower
@@ -81,12 +81,13 @@ export const fetchGiveaways = async () => {
     };
   }
 };
+
 /**
  * Encuentra un giveaway por ID en el cache
  * @param {number} giveawayId 
  * @returns {Object|null}
  */
-const findGiveawayById = (giveawayId) => {
+export const findGiveawayById = (giveawayId) => {
   return currentGiveaways.find(giveaway => giveaway.id === giveawayId) || null;
 };
 
@@ -153,4 +154,69 @@ export const saveGiveaway = async (giveawayId) => {
       message: `Error al guardar: ${error.message}`
     };
   }
+};
+
+/**
+ * Obtiene los juegos únicos para votación (sin duplicados)
+ * @returns {Array}
+ */
+export const getUniqueGamesForVoting = () => {
+  const uniqueGames = [];
+  const seenTitles = new Set();
+  
+  currentGiveaways.forEach(giveaway => {
+    if (!seenTitles.has(giveaway.title)) {
+      seenTitles.add(giveaway.title);
+      uniqueGames.push({
+        id: giveaway.id,
+        title: giveaway.title,
+        platform: giveaway.platforms,
+        type: giveaway.type,
+        thumbnail: giveaway.thumbnail
+      });
+    }
+  });
+  
+  return uniqueGames;
+};
+
+/**
+ * Filtra juegos para votación
+ * @param {string} platform 
+ * @param {string} type 
+ * @returns {Array}
+ */
+export const filterGamesForVoting = (platform, type) => {
+  let filteredGames = currentGiveaways;
+  
+  if (platform) {
+    filteredGames = filteredGames.filter(game => 
+      game.platforms.includes(platform)
+    );
+  }
+  
+  if (type) {
+    filteredGames = filteredGames.filter(game => 
+      game.type === type
+    );
+  }
+  
+  // Eliminar duplicados por título
+  const uniqueGames = [];
+  const seenTitles = new Set();
+  
+  filteredGames.forEach(game => {
+    if (!seenTitles.has(game.title)) {
+      seenTitles.add(game.title);
+      uniqueGames.push({
+        id: game.id,
+        title: game.title,
+        platform: game.platforms,
+        type: game.type,
+        thumbnail: game.thumbnail
+      });
+    }
+  });
+  
+  return uniqueGames;
 };

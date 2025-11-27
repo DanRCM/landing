@@ -150,4 +150,72 @@ export const saveSubscriptionToFirebase = async (email, platform) => {
   }
 };
 
+/**
+ * Guarda un voto en Firebase
+ * @param {Object} voteData - Datos del voto
+ * @returns {Promise<{success: boolean, message: string}>}
+ */
+export const saveVoteToFirebase = async (voteData) => {
+  try {
+    const votesRef = ref(database, 'votes');
+    const newVoteRef = push(votesRef);
+    
+    const voteWithMetadata = {
+      ...voteData,
+      voteId: newVoteRef.key,
+      votedAt: new Date().toISOString(),
+      votedDate: new Date().toLocaleDateString('es-ES'),
+      votedTime: new Date().toLocaleTimeString('es-ES')
+    };
+    
+    await set(newVoteRef, voteWithMetadata);
+    
+    return {
+      success: true,
+      message: 'Voto registrado exitosamente',
+      voteId: newVoteRef.key
+    };
+  } catch (error) {
+    console.error('Error guardando voto:', error);
+    return {
+      success: false,
+      message: `Error al guardar el voto: ${error.message}`
+    };
+  }
+};
+
+/**
+ * Obtiene todos los votos de Firebase
+ * @returns {Promise<{success: boolean, data: Array|string}>}
+ */
+export const getVotesFromFirebase = async () => {
+  try {
+    const votesRef = ref(database, 'votes');
+    const snapshot = await get(votesRef);
+    
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      // Convertir objeto de Firebase en array y filtrar nulls
+      const votesArray = Object.values(data).filter(item => item !== null);
+      return {
+        success: true,
+        data: votesArray
+      };
+    } else {
+      return {
+        success: true,
+        data: [],
+        message: 'No hay votos registrados'
+      };
+    }
+  } catch (error) {
+    console.error('Error obteniendo votos:', error);
+    return {
+      success: false,
+      message: `Error al obtener los votos: ${error.message}`,
+      data: []
+    };
+  }
+};
+
 export { database, ref, set, push, get, onValue, remove };
